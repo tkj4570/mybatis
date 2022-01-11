@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiana.mybatis.dao.EmployeeMapper">
+    <select id="getEmployeeById" resultType="emp">
+         select * from tbl_employee where id = #{id}
+    </select>
+
+    <select id="getEmployeeCount" resultType="Integer">
+         select count(*) from tbl_employee
+    </select>
+
+    <select id="getEmployeeByIdAndLastName" resultType="emp">
+         select * from tbl_employee where id = #{id} and last_name = #{lastName}
+    </select>
+
+    <select id="getEmployeeByDeptId" resultType="emp">
+         select * from tbl_employee where dept_id=#{deptId}
+    </select>
+
+    <!--使用useGeneratedKeys自增主键值-->
+    <insert id="addEmployee" useGeneratedKeys="true" keyProperty="id">
+        insert into tbl_employee(
+            <include refid="insertColumn"></include>
+        ) values(#{lastName},#{email},#{gender})
+    </insert>
+    <update id="updateEmployee">
+        update tbl_employee set `last_name`=#{lastName},`email`=#{email},`gender`=#{gender} where id=#{id}
+    </update>
+    <delete id="deleteEmployee">
+        delete from tbl_employee where id = #{id}
+    </delete>
+
+    <select id="getEmployeeByName" resultType="emp">
+        select * from tbl_employee where last_name like #{lastName}
+    </select>
+
+    <!--以id为key值-->
+    <select id="getEmployeeIndexId" resultType="emp">
+        select * from tbl_employee where last_name like #{lastName}
+    </select>
+
+
+    <resultMap id="employeeAndDept" type="emp">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="email" property="email"></result>
+        <result column="gender" property="gender"></result>
+<!--        <result column="did" property="department.id"></result>-->
+<!--        <result column="departmentName" property="department.departmentName"></result>-->
+        <association property="department" javaType="com.xiana.mybatis.bean.Department">
+            <id column="did" property="id"></id>
+            <result column="departmentName" property="departmentName"></result>
+        </association>
+    </resultMap>
+    <select id="getEmployeeAndDeptById" resultMap="employeeAndDept">
+        select e.*,d.id as did,d.dept_name departmentName from tbl_employee e,tbl_dept d where e.dept_id=d.id and e.id=#{id}
+    </select>
+
+
+    <resultMap id="employeeStep" type="emp">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="email" property="email"></result>
+        <result column="gender" property="gender"></result>
+        <discriminator javaType="String" column="gender">
+            <case value="0" resultType="emp">
+                <association property="department" select="com.xiana.mybatis.dao.DepartmentMapper.getDepartmentById" column="dept_id"></association>
+            </case>
+            <case value="1" resultType="emp">
+                <id column="id" property="id"></id>
+                <result column="email" property="lastName"></result>
+                <result column="email" property="email"></result>
+                <result column="gender" property="gender"></result>
+            </case>
+        </discriminator>
+    </resultMap>
+    <select id="getEmployeeStep" resultMap="employeeStep">
+        select * from tbl_employee where id = #{id}
+    </select>
+
+    <select id="getEmployeeByCondition" resultType="emp">
+        select * from tbl_employee
+        <bind value="'%'+lastName+'%'" name="_lastName"></bind>
+        <where>
+            <if test="id != null ">
+                id = #{id}
+            </if>
+            <if test="email != null ">
+                and email = #{email}
+            </if>
+            <if test="lastName != null and lastName != ''">
+                and last_name LIKE #{_lastName}
+            </if>
+            <if test="gender == 1 or gender == 0">
+                and gender = #{gender}
+            </if>
+        </where>
+    </select>
+
+    <select id="getEmployeeByIn" resultType="emp">
+        select * from tbl_employee where id in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+    
+    <sql id="insertColumn">
+        `last_name`,`email`,`gender`
+    </sql>
+</mapper>
