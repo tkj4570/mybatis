@@ -1,5 +1,6 @@
 package com.xiana.mybatis.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  * @description [类型描述]
  * @createTime 2022/1/9 17:27
  */
-public class Department {
+public class Department implements Serializable {
     private Integer id;
     private String DepartmentName;
     private List<Employee> employees;

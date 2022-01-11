@@ -3,6 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiana.mybatis.dao.DepartmentMapper">
+    <cache ></cache>
     <select id="getDepartmentById" resultType="com.xiana.mybatis.bean.Department">
          select id,dept_name as departmentName from tbl_dept where id = #{id}
     </select>

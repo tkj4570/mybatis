@@ -2,6 +2,8 @@ package com.xiana.mybatis.bean;
 
 import org.apache.ibatis.type.Alias;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mail to: 457066709@qq.com" rel="nofollow">Administrator</a>
  * @version v1.0
@@ -11,7 +13,7 @@ import org.apache.ibatis.type.Alias;
  * @createTime 2022/1/8 9:50
  */
 @Alias("emp")
-public class Employee {
+public class Employee implements Serializable {
     private Integer id;
     private String lastName;
     private String email;
